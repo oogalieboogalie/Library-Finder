@@ -1,0 +1,5 @@
+{
+  "name": "DevLib Finder",
+  "description": "An intelligent assistant for developers to discover the best libraries and frameworks for their projects. Describe your project, and get curated suggestions powered by Gemini.",
+  "requestFramePermissions": []
+}
