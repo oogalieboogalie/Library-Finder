@@ -11,6 +11,12 @@ import type { LibrarySuggestion } from './types';
 
 const HISTORY_KEY = 'devlib-search-history';
 
+const frontendCategories = ['frontend', 'ui', 'ux', 'styling', 'visualization', 'cross-platform'];
+const isFrontend = (suggestion: LibrarySuggestion) => {
+    const category = suggestion.category.toLowerCase();
+    return frontendCategories.some(cat => category.includes(cat));
+};
+
 export default function App() {
   const [prompt, setPrompt] = useState<string>('');
   const [suggestions, setSuggestions] = useState<LibrarySuggestion[] | null>(null);
@@ -73,11 +79,48 @@ export default function App() {
       return <p className="text-center text-red-400 mt-8">{error}</p>;
     }
     if (suggestions) {
+      const frontendSuggestions = suggestions.filter(isFrontend);
+      const backendSuggestions = suggestions.filter(suggestion => !isFrontend(suggestion));
+      const hasFrontend = frontendSuggestions.length > 0;
+      const hasBackend = backendSuggestions.length > 0;
+
+      if (!hasFrontend && !hasBackend) {
+        return <p className="text-center text-gray-400 mt-8">No specific library suggestions found. Try rephrasing your request.</p>;
+      }
+
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-          {suggestions.map((suggestion, index) => (
-            <LibraryCard key={index} suggestion={suggestion} />
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+          {/* Frontend Column */}
+          <div className="flex flex-col space-y-4">
+            <h2 className="text-2xl font-bold text-center text-cyan-400">Frontend</h2>
+            <div className="flex flex-col gap-6">
+              {hasFrontend ? (
+                frontendSuggestions.map((suggestion, index) => (
+                  <LibraryCard key={`fe-${index}`} suggestion={suggestion} />
+                ))
+              ) : (
+                <div className="text-center p-8 border-2 border-dashed border-gray-700 rounded-lg h-full flex items-center justify-center min-h-[150px]">
+                  <p className="text-gray-500">No frontend suggestions for this project.</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Backend Column */}
+          <div className="flex flex-col space-y-4">
+            <h2 className="text-2xl font-bold text-center text-gray-300">Backend & Tools</h2>
+            <div className="flex flex-col gap-6">
+              {hasBackend ? (
+                backendSuggestions.map((suggestion, index) => (
+                  <LibraryCard key={`be-${index}`} suggestion={suggestion} />
+                ))
+              ) : (
+                <div className="text-center p-8 border-2 border-dashed border-gray-700 rounded-lg h-full flex items-center justify-center min-h-[150px]">
+                  <p className="text-gray-500">No backend or tool suggestions for this project.</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       );
     }
@@ -100,7 +143,7 @@ export default function App() {
         >
           back end
         </span>
-        <div className="max-w-3xl mx-auto relative z-[1]">
+        <div className="max-w-7xl mx-auto relative z-[1]">
           <SearchBar
             prompt={prompt}
             setPrompt={setPrompt}

@@ -58,7 +58,6 @@ export async function findLibraries(projectDescription: string): Promise<Library
 **Example Reasoning:**
 If a user says "I’m building a Rust API with async and GitHub integration," you should reason:
 1.  **Intent:** "web API" and "automate GitHub".
-// FIX: Replaced backticks with single quotes to avoid parsing errors.
 2.  **Stack:** This requires an async runtime (Tokio) + a web server (Axum) + a GitHub client ('octocrab') + JSON handling ('serde_json').
 3.  **Output:** Suggest Tokio, Axum, octocrab, and serde_json, each with a description, reasoning, and a critical safety tip.
 
